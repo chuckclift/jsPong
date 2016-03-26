@@ -1,0 +1,109 @@
+<html>
+<head><title>Pong</title></head>
+<body>
+<canvas id="gc" width="640" height="480"></canvas>
+<script>
+// ( 3 / 50 ) * (ball - centerline)
+
+paddle_height=100
+paddle_thick=10
+left_paddley=right_paddley=40
+ball_size=4
+ball_x=ball_y=20
+xv=yv=4
+score1=score2=0
+ai_speed=3
+
+window.onload=function(){
+    c=document.getElementById('gc');
+    cc=c.getContext('2d');
+    setInterval(update,1000/30);
+    c.addEventListener('mousemove', function(e){left_paddley = e.clientY - paddle_height / 2});
+}
+
+function reset(){
+    ball_x=c.width/2; 
+    ball_y=c.height/2; 
+    xv=-xv;
+    yv=3; 
+}
+    
+function update(){
+
+    // console.log('Iterate')
+    console.log(xv)
+    console.log(yv)
+    if (ball_y < 0 && yv < 0){
+        yv = -yv; 
+    } else if (ball_y > c.height && yv > 0) {
+        yv = -yv; 
+    }
+   
+
+
+     
+    if (ball_x < paddle_thick) {
+        //Checks to see if the left paddle has made contact
+        if (ball_y > left_paddley && ball_y < left_paddley + paddle_height) {
+            xv = -xv;
+            
+            // ( 3 / 50 ) * (ball - paddle - 1/2 * paddle_height)
+            yv = (3/50) * (ball_y - left_paddley - paddle_height / 2)
+
+            // dy = ball_y - left_paddley - left_paddley / 2;
+            // yv = dy*0.3
+            
+        } else {
+            score2++;
+            reset(); 
+        }
+    }
+    
+
+    if (ball_x > c.width - paddle_thick) {
+        //Checks to see if the right paddle has made contact
+        if (ball_y > right_paddley && ball_y < right_paddley + paddle_height) {
+            xv = -xv;
+            yv = (3/50) * (ball_y - right_paddley - paddle_height / 2)
+            // dy = ball_y - right_paddley - right_paddley / 2;
+            // yv = dy*0.3
+            
+        } else {
+            score1++;
+            reset(); 
+        }
+    }
+
+
+    // The opponent "AI"
+    if (right_paddley + paddle_height / 2 < ball_y) {
+        right_paddley += ai_speed;
+    } else {
+        right_paddley -= ai_speed;
+    }
+
+
+
+    cc.fillStyle='black';
+    cc.fillRect(0,0,c.width,c.height);
+
+    // Drawing left paddle
+    cc.fillStyle='white';
+    cc.fillRect(0, left_paddley, paddle_thick, paddle_height); 
+    
+    // Drawing right paddle
+    cc.fillRect(c.width-paddle_thick, right_paddley, paddle_thick, paddle_height); 
+
+    // Drawing the ball
+    ball_x += xv;
+    ball_y += yv;
+    cc.fillRect(ball_x - ball_size / 2,ball_y - ball_size / 2, ball_size, ball_size ); 
+
+    // Drawing scores
+    cc.fillText(score1, 100,100); 
+    cc.fillText(score2, c.width-100,100); 
+
+}
+</script>
+</body>
+</html>
